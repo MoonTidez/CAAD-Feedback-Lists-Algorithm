@@ -1,0 +1,12 @@
+{
+  "name": "caad-feedback-lists-algorithm",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fair ordering of 1:1 feedback sessions from student preferences (Hungarian and Boston modes)",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
