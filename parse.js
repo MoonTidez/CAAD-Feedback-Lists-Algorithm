@@ -26,6 +26,11 @@ function headerOrdinal(header) {
   return m ? parseInt(m[1], 10) : null;
 }
 
+function ordinalLabel(n) {
+  const suffix = n % 100 >= 11 && n % 100 <= 13 ? "th" : { 1: "st", 2: "nd", 3: "rd" }[n % 10] || "th";
+  return n + suffix + " choice";
+}
+
 function listRows(rows) {
   if (rows.length === 1) return "row " + rows[0];
   return "rows " + rows.slice(0, -1).join(", ") + " and " + rows[rows.length - 1];
@@ -86,7 +91,7 @@ function parseRows(rows) {
     let gapWarned = false;
     for (let i = 0; i < choiceCols.length; i++) {
       const cell = row[choiceCols[i].col];
-      const label = header[choiceCols[i].col].trim();
+      const label = ordinalLabel(choiceCols[i].ord);
       if (isBlank(cell)) { sawGap = true; continue; }
       const pos = readPosition(cell);
       if (pos === null) {
