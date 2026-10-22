@@ -2,7 +2,7 @@
 
 A small static site that turns a CSV of student preferences into the order of 1:1 feedback sessions for the CAAD graphic design class. It runs entirely in the browser: no backend, no login, no storage, no analytics. Uploaded files never leave your machine.
 
-**Live site:** _added after the first deploy_
+**Live site:** https://moontidez.github.io/CAAD-Feedback-Lists-Algorithm/ · [FAQ](https://moontidez.github.io/CAAD-Feedback-Lists-Algorithm/faq.html)
 
 ## Running a session
 
