@@ -222,22 +222,33 @@ function assignBoston(sorted, P, rng) {
   };
 }
 
-// ---------- Renumbering and stats ----------
+// ---------- Ordering and stats ----------
 
-// Drop empty positions and renumber 1..M, keeping relative order.
-function renumber(assigned) {
+// Order by position. Positions keep the numbers students entered: empty
+// positions are left as gaps, not renumbered away. originalPosition always
+// equals position; it stays for callers written against the first version.
+function sortByPosition(assigned) {
   return assigned
     .slice()
     .sort(function (a, b) { return a.originalPosition - b.originalPosition; })
-    .map(function (a, i) {
-      return { position: i + 1, originalPosition: a.originalPosition, name: a.name, rank: a.rank };
+    .map(function (a) {
+      return { position: a.originalPosition, originalPosition: a.originalPosition, name: a.name, rank: a.rank };
     });
 }
 
-function computeStats(order, sorted) {
+// Positions 1..P that nobody was given.
+function emptyPositions(order, P) {
+  const used = {};
+  for (let i = 0; i < order.length; i++) used[order[i].position] = true;
+  const empty = [];
+  for (let p = 1; p <= P; p++) if (!used[p]) empty.push(p);
+  return empty;
+}
+
+function computeStats(order, sorted, P) {
   const listLength = {};
   for (let i = 0; i < sorted.length; i++) listLength[sorted[i].key] = sorted[i].choices.length;
-  const stats = { students: order.length, firstChoice: 0, topThree: 0, notOnList: 0, noChoices: 0, averageRank: null, worstRank: null };
+  const stats = { students: order.length, firstChoice: 0, topThree: 0, notOnList: 0, noChoices: 0, averageRank: null, worstRank: null, emptyPositions: emptyPositions(order, P || order.length) };
   let sum = 0, listed = 0;
   for (let i = 0; i < order.length; i++) {
     const r = order[i].rank;
@@ -270,10 +281,10 @@ function assign(students, options) {
   for (let s = 0; s < M; s++) for (let c = 0; c < sorted[s].choices.length; c++) P = Math.max(P, sorted[s].choices[c]);
   const rng = makeRng(seed);
   const result = M === 0 ? { assigned: [], log: { positions: 0 } } : mode === "boston" ? assignBoston(sorted, P, rng) : assignHungarian(sorted, P, rng);
-  const order = renumber(result.assigned);
+  const order = sortByPosition(result.assigned);
   result.log.mode = mode;
   result.log.seed = seed;
-  return { order: order, stats: computeStats(order, sorted), log: result.log };
+  return { order: order, stats: computeStats(order, sorted, P), log: result.log };
 }
 
-if (typeof module !== "undefined") module.exports = { cyrb128, mulberry32, makeRng, nameKey, sortStudents, rankOf, costOf, hungarian, renumber, computeStats, assign };
+if (typeof module !== "undefined") module.exports = { cyrb128, mulberry32, makeRng, nameKey, sortStudents, rankOf, costOf, hungarian, sortByPosition, emptyPositions, computeStats, assign };

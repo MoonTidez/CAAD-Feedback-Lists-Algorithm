@@ -14,14 +14,22 @@ function studentsFrom(fixture) {
   return parsed.students;
 }
 
+// Positions keep the numbers students entered, so they run from 1 to P
+// (the larger of M and the highest position listed), with gaps allowed.
 function assertValidOrder(result, students) {
   const M = students.length;
+  let P = M;
+  for (const s of students) for (const c of s.choices) P = Math.max(P, c);
   assert.equal(result.order.length, M);
-  assert.deepEqual(result.order.map((o) => o.position), Array.from({ length: M }, (_, i) => i + 1));
   assert.deepEqual(result.order.map((o) => o.name).sort(), students.map((s) => s.name.trim()).sort());
-  const originals = result.order.map((o) => o.originalPosition);
-  assert.equal(new Set(originals).size, M, "no original position used twice");
-  for (let i = 1; i < originals.length; i++) assert.ok(originals[i] > originals[i - 1], "relative order kept");
+  const positions = result.order.map((o) => o.position);
+  assert.equal(new Set(positions).size, M, "no position used twice");
+  for (const p of positions) assert.ok(p >= 1 && p <= P, "position " + p + " within 1.." + P);
+  for (let i = 1; i < positions.length; i++) assert.ok(positions[i] > positions[i - 1], "sorted by position");
+  for (const o of result.order) assert.equal(o.originalPosition, o.position);
+  const empty = [];
+  for (let p = 1; p <= P; p++) if (!positions.includes(p)) empty.push(p);
+  assert.deepEqual(result.stats.emptyPositions, empty);
 }
 
 // Smallest total integer cost over every injective assignment of students to 1..P.
@@ -79,7 +87,7 @@ for (const mode of MODES) {
     }
   });
 
-  test(`${mode}: every fixture gives each student exactly one position, 1 to M`, () => {
+  test(`${mode}: every fixture gives each student exactly one position, no position twice`, () => {
     for (const fixture of fs.readdirSync(FIXTURES)) {
       const students = studentsFrom(fixture);
       assertValidOrder(assign(students, { mode, seed: SEED }), students);
@@ -102,8 +110,7 @@ for (const mode of MODES) {
     const result = assign(students, { mode, seed: "2026-10-28" });
     const last = result.order[result.order.length - 1];
     assert.equal(last.name, "Elif Demir");
-    assert.equal(last.position, 12);
-    assert.equal(last.originalPosition, 14);
+    assert.equal(last.position, 14);
     assert.equal(last.rank, 1);
   });
 
@@ -111,6 +118,34 @@ for (const mode of MODES) {
     assert.deepEqual(assign([], { mode, seed: SEED }).order, []);
   });
 }
+
+test("students keep the position number they asked for, with gaps left empty", () => {
+  // Shaped like a real class: 9 students listing positions up to 14.
+  const students = [
+    { name: "A", choices: [8, 9, 7, 6, 5, 10, 11, 12] },
+    { name: "B", choices: [5, 6, 7, 8, 9, 4, 3, 2, 12, 11, 10, 13, 14, 1] },
+    { name: "C", choices: [13, 10, 7, 6, 2, 1, 3, 4, 5, 8, 9, 11, 12, 14] },
+    { name: "D", choices: [5, 4, 3, 6, 2, 7, 8, 9, 10, 1, 11, 12, 13, 14] },
+    { name: "E", choices: [9, 8, 10, 11, 7, 12, 13, 6, 5, 4, 3, 2, 14, 1] },
+    { name: "F", choices: [7, 8, 6, 5, 4, 9, 10, 11, 3, 12, 2, 13, 14, 1] },
+    { name: "G", choices: [3] },
+    { name: "H", choices: [3, 4, 5, 2, 1, 6, 7, 8, 9, 10, 11, 12, 13, 14] },
+    { name: "I", choices: [6, 7, 8, 9, 10, 11, 12, 13, 14] },
+  ];
+  for (const mode of MODES) {
+    for (const seed of ["2026-10-26", "2026-10-28", "2026-11-02"]) {
+      const result = assign(students, { mode, seed });
+      assertValidOrder(result, students);
+      for (const o of result.order) {
+        const s = students.find((x) => x.name === o.name);
+        if (o.rank !== null) assert.equal(o.position, s.choices[o.rank - 1], o.name + " sits at the number they listed");
+      }
+      // Position 3 is two students' 1st choice, so it is filled at 3, not shifted up.
+      assert.ok(result.order.some((o) => o.position === 3));
+      assert.equal(result.stats.emptyPositions.length, 14 - 9);
+    }
+  }
+});
 
 test("hungarian: finds the minimal total cost (brute force, up to 6 students)", () => {
   let cases = 0;
