@@ -42,7 +42,7 @@ Cleaning rules, each reported on the page:
 
 ## How it works
 
-Both methods match students to positions 1 to P, where P is the larger of the class size and the highest position anyone listed. Empty positions are then removed and the rest renumbered 1 to M, so someone who asked for 14 in a class of 12 still goes last.
+Both methods match students to positions 1 to P, where P is the larger of the class size and the highest position anyone listed. Everyone keeps the position number they were given, so someone who asked for 3 and got it is shown as 3. Positions nobody got are left as gaps: the table marks them ("Positions 1–2 are empty") and the group-chat text puts a blank line where they fall.
 
 Every random choice comes from one generator seeded with the session date (cyrb128 hash into mulberry32). Students are sorted by name before any draw, so row order in the CSV can't change the result.
 
@@ -53,7 +53,7 @@ Every random choice comes from one generator seeded with the session date (cyrb1
 
 | File | Purpose |
 | --- | --- |
-| `scheduler.js` | Seeded generator, both modes, renumbering and stats |
+| `scheduler.js` | Seeded generator, both modes, ordering and stats |
 | `parse.js` | Rows to a clean student list with warnings and errors; date from file name |
 | `app.js` | UI wiring: file input, Papa Parse, rendering, copy and downloads |
 | `index.html`, `faq.html`, `styles.css` | The pages |
@@ -64,6 +64,8 @@ Every random choice comes from one generator seeded with the session date (cyrb1
 ```js
 assign(students, { mode: "hungarian" | "boston", seed: "2026-10-26" })
 // -> { order: [{ position, originalPosition, name, rank }], stats, log }
+// position is the number the student was given (gaps allowed); originalPosition
+// is the same number, kept for compatibility. stats.emptyPositions lists the gaps.
 ```
 
 In Apps Script, paste `parse.js` and `scheduler.js` as two script files, turn the sheet's values into an array of string arrays (`sheet.getDataRange().getDisplayValues()`), and call `parseRows(rows)` then `assign(result.students, { mode, seed })`.
@@ -79,6 +81,10 @@ npm test
 To try the pages locally, serve the folder (for example `python3 -m http.server`) and open `http://localhost:8000`.
 
 ## Decisions
+
+Changed from the brief after the first real session (2026-10-26):
+
+- **No renumbering.** The brief said to remove empty positions and renumber 1 to M. In practice that showed a student who asked for and got position 3 as "1", because nobody took 1 and 2. Positions now keep the numbers students entered, gaps and all.
 
 Choices made where the brief was silent:
 

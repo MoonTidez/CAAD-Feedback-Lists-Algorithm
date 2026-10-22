@@ -243,19 +243,31 @@
 
   function chatText(mode, seed, order) {
     const lines = ["Feedback order — " + longDate(seed) + " (" + MODE_LABEL[mode] + ", seed " + seed + ")"];
-    order.forEach(function (o) { lines.push(o.position + ". " + o.name); });
+    // A blank line marks each run of empty positions between people.
+    order.forEach(function (o, i) {
+      if (i > 0 && o.position > order[i - 1].position + 1) lines.push("");
+      lines.push(o.position + ". " + o.name);
+    });
     return lines.join("\n");
   }
 
+  function gapRow(from, to) {
+    const text = from === to ? "Position " + from + " is empty" : "Positions " + from + "–" + to + " are empty";
+    return h("tr", { class: "gap" }, [h("td", { colspan: "3", text: text })]);
+  }
+
   function resultTable(order, listLengths, diffNames, caption) {
-    const rows = order.map(function (o) {
+    const rows = [];
+    order.forEach(function (o, i) {
+      const prev = i === 0 ? 0 : order[i - 1].position;
+      if (o.position > prev + 1) rows.push(gapRow(prev + 1, o.position - 1));
       const label = resultLabel(o, listLengths);
       const differs = diffNames && diffNames[nameKey(o.name)];
-      return h("tr", { class: differs ? "diff" : null }, [
+      rows.push(h("tr", { class: differs ? "diff" : null }, [
         h("td", { class: "num", text: String(o.position) }),
         h("td", { class: "name" }, [o.name, differs ? h("span", { class: "diff-mark", text: "differs" }) : null]),
         h("td", { class: o.rank === null ? "result-off" : null, text: label }),
-      ]);
+      ]));
     });
     return h("div", { class: "table-wrap" }, [
       h("table", null, [
@@ -285,7 +297,7 @@
   }
 
   function auditLog(log) {
-    const body = [h("p", { class: "hint", text: "Positions here are the numbers students entered, before empty positions were removed. Positions 1–" + log.positions + " were in play." })];
+    const body = [h("p", { class: "hint", text: "Positions 1–" + log.positions + " were in play." })];
     log.rounds.forEach(function (r) {
       const parts = [h("h3", { text: "Round " + r.round + ": " + ordinal(r.round) + " choices" })];
       if (!r.applications.length && !r.blocked.length) {

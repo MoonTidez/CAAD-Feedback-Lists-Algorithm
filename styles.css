@@ -317,6 +317,14 @@ td.name { overflow-wrap: anywhere; }
 
 tr.diff td { background: var(--diff-bg); }
 
+tr.gap td {
+  color: var(--text-2);
+  font-size: 14px;
+  font-style: italic;
+  padding: 6px 8px;
+  text-align: center;
+}
+
 .diff-mark {
   display: inline-block;
   font-size: 12px;
