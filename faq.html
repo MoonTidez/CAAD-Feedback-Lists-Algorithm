@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Feedback Order FAQ</title>
+  <meta name="description" content="How the CAAD 1:1 feedback order is made, and how the Hungarian and Boston methods differ.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html">Feedback Order<small>CAAD 1:1 feedback lists</small></a>
+      <nav class="site-nav" aria-label="Site">
+        <a href="index.html">Order</a>
+        <a href="faq.html" aria-current="page">FAQ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap faq">
+    <h1>Questions about the feedback order</h1>
+    <p class="lede">Tap a question to open it. Each answer has its own link you can share.</p>
+
+    <details id="how-it-works">
+      <summary>How does this work?</summary>
+      <div class="answer">
+        <p>Before each class you're attending, open that session's tab in the class Sheet, pick your name, and fill in the positions you want, best first. After the cutoff, the sheet goes through this tool and the order is posted in the group chat.</p>
+      </div>
+    </details>
+
+    <details id="methods">
+      <summary>What are the two methods?</summary>
+      <div class="answer">
+        <p><strong>Hungarian (whole-class best fit):</strong> it looks at everyone's lists at once and finds the order that leaves the class happiest overall. It works hard to avoid leaving anyone with a bad result, even if that means someone gets their 2nd choice instead of their 1st.</p>
+        <p><strong>Boston (round by round):</strong> everyone's 1st choices are checked first. If only one person wants a position, they get it. If several do, a random draw decides and the others move on. Then the 2nd choices of those still waiting are checked, but only for positions that are still free, and so on. Anyone left at the end is placed randomly in the remaining positions.</p>
+      </div>
+    </details>
+
+    <details id="fairer">
+      <summary>Which one is fairer?</summary>
+      <div class="answer">
+        <p>They're fair in different ways. Boston gives everyone an equal shot in each draw, and nobody's 2nd choice can beat your 1st. But if you lose early draws, you can end up with whatever's left.</p>
+        <p>Hungarian protects the class as a whole from bad results, but it may give you your 2nd choice so someone else avoids their 6th. We're trying both and asking which you prefer.</p>
+      </div>
+    </details>
+
+    <details id="listing-more">
+      <summary>Will listing more positions count against me?</summary>
+      <div class="answer">
+        <p>No, not in either method. Extra choices only come into play if your earlier ones don't work out. Listing a 2nd choice never lowers your chance of getting your 1st.</p>
+      </div>
+    </details>
+
+    <details id="short-lists">
+      <summary>What does it mean if I only list one or two positions?</summary>
+      <div class="answer">
+        <p>You're saying: “These are the ones I care about. Anywhere else is fine.” Both methods treat every position you didn't list as equally okay for you.</p>
+        <ul>
+          <li>In Hungarian, if a position you listed is contested, it may go to someone with fewer good options, because you've said you're flexible about the rest.</li>
+          <li>In Boston, your chance in each draw is the same however long your list is. But if you lose, you're placed randomly among what's left, which tends to be the less popular positions.</li>
+        </ul>
+        <p>If there are positions you'd genuinely dislike, list a few backups.</p>
+      </div>
+    </details>
+
+    <details id="absent">
+      <summary>What if I'm absent, or forget to fill in the sheet?</summary>
+      <div class="answer">
+        <p>If your name isn't in that session's sheet, you're counted as absent for that session and won't appear in the order. If you're coming to class, make sure your row is filled in before the cutoff.</p>
+      </div>
+    </details>
+
+    <details id="random-draws">
+      <summary>How are random draws decided? Could it be rigged?</summary>
+      <div class="answer">
+        <p>Every random draw is based on the session date. Anyone who runs the same sheet file with the same date and method gets exactly the same order, and you can check it yourself on <a href="index.html">this site</a>.</p>
+      </div>
+    </details>
+
+    <details id="gaming">
+      <summary>Can I game the system?</summary>
+      <div class="answer">
+        <p>In Boston, sometimes. Putting a less popular position first can beat listing your real favourite, because you avoid a draw. The risk is ending up with a position you like less.</p>
+        <p>In Hungarian, it's much harder: listing your honest order is your best bet.</p>
+      </div>
+    </details>
+  </main>
+
+  <script>
+    (function () {
+      "use strict";
+      var items = document.querySelectorAll(".faq details");
+
+      // Add a "Copy link" button to the end of every answer.
+      Array.prototype.forEach.call(items, function (d) {
+        var row = document.createElement("div");
+        row.className = "copy-link";
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "btn btn-small";
+        btn.textContent = "Copy link";
+        btn.setAttribute("aria-label", "Copy link to “" + d.querySelector("summary").textContent + "”");
+        var status = document.createElement("p");
+        status.className = "status";
+        status.setAttribute("role", "status");
+        row.appendChild(btn);
+        row.appendChild(status);
+        d.querySelector(".answer").appendChild(row);
+
+        btn.addEventListener("click", function () {
+          var url = location.href.split("#")[0] + "#" + d.id;
+          history.replaceState(null, "", "#" + d.id);
+          function done(ok) {
+            status.textContent = ok ? "Link copied." : url;
+            setTimeout(function () { status.textContent = ""; }, 4000);
+          }
+          if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(url).then(function () { done(true); }, function () { done(false); });
+          } else {
+            done(false);
+          }
+        });
+      });
+
+      // Open the question named in the address, so shared links land on an open answer.
+      function openFromHash() {
+        var id = decodeURIComponent(location.hash.slice(1));
+        var target = id && document.getElementById(id);
+        if (target && target.tagName === "DETAILS") {
+          target.open = true;
+          target.scrollIntoView();
+        }
+      }
+      window.addEventListener("hashchange", openFromHash);
+      openFromHash();
+    })();
+  </script>
+</body>
+</html>
