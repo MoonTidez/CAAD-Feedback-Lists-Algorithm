@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Feedback Order</title>
+  <meta name="description" content="Turns a CSV of student preferences into a fair order for 1:1 feedback sessions. Runs entirely in your browser.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html">Feedback Order<small>CAAD 1:1 feedback lists</small></a>
+      <nav class="site-nav" aria-label="Site">
+        <a href="index.html" aria-current="page">Order</a>
+        <a href="faq.html">FAQ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1>Make the feedback order</h1>
+    <p class="lede">Upload the session's CSV, check the date, and run. The same file, date and method always give the same order.</p>
+    <p class="privacy-note">Your data stays in your browser.</p>
+
+    <div class="tabs segmented" role="tablist" aria-label="View">
+      <button type="button" role="tab" id="tab-run" aria-controls="panel" aria-selected="true">Run</button>
+      <button type="button" role="tab" id="tab-compare" aria-controls="panel" aria-selected="false" tabindex="-1">Compare</button>
+    </div>
+
+    <div id="panel" role="tabpanel" aria-labelledby="tab-run">
+      <form id="inputs" class="card" novalidate>
+        <div class="fields">
+          <div class="field">
+            <label for="file">Preferences CSV</label>
+            <input type="file" id="file" accept=".csv,text/csv" aria-describedby="file-hint">
+            <p class="hint" id="file-hint">Need a starting point? <a href="#" id="download-template">Download the template</a>.</p>
+          </div>
+          <div class="field">
+            <label for="date">Session date</label>
+            <input type="date" id="date" aria-describedby="date-source">
+            <p class="hint" id="date-source">Choose a file to fill this in.</p>
+          </div>
+          <fieldset class="field" id="mode-field">
+            <legend>Method</legend>
+            <div class="segmented">
+              <label><input type="radio" name="mode" value="hungarian" checked><span>Hungarian</span></label>
+              <label><input type="radio" name="mode" value="boston"><span>Boston</span></label>
+            </div>
+            <p class="hint"><a href="faq.html#methods">How the two methods differ</a></p>
+          </fieldset>
+        </div>
+        <div class="actions">
+          <button type="submit" class="btn btn-primary" id="run">Run</button>
+        </div>
+      </form>
+
+      <div id="messages" class="messages" aria-live="polite"></div>
+      <section id="output" aria-live="polite" hidden></section>
+    </div>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="parse.js"></script>
+  <script src="scheduler.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
