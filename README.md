@@ -85,12 +85,13 @@ To try the pages locally, serve the folder (for example `python3 -m http.server`
 Changed from the brief after the first real session (2026-10-26):
 
 - **No renumbering.** The brief said to remove empty positions and renumber 1 to M. In practice that showed a student who asked for and got position 3 as "1", because nobody took 1 and 2. Positions now keep the numbers students entered, gaps and all.
+- **Off-list wording.** The brief's "Not on list" read like an error, so the result now says "Couldn't place from their choices". The scoring is unchanged on purpose: making off-list placements cost more would reward listing fewer positions.
 
 Choices made where the brief was silent:
 
 - **One shared input panel.** Run and Compare use the same file and date fields; the method choice hides on the Compare tab. Switching tabs re-runs with the loaded file.
 - **Results run on demand.** Choosing a file fills in the date but nothing runs until you press Run.
-- **Empty lists get their own label.** A student who listed nothing shows "No choices listed" rather than "Not on list", and the stats count them separately ("Listed no choices") so "Placed off their list" only counts students who listed something.
+- **Empty lists get their own label.** A student who listed nothing shows "No choices listed", and the stats count them separately ("Listed no choices") so "Couldn't place from their choices" only counts students who listed something.
 - **"Differs" in Compare** means a different final position or a different result label.
 - **Name sort uses a fixed locale.** `localeCompare` runs with the `en` locale at base sensitivity, with a plain code-point comparison as a tie-break, so the order is identical in every browser and in Node regardless of the viewer's language.
 - **Unreadable cells warn.** A choice cell with no integer counts as empty, as the brief says, and also shows a warning so typos are visible.

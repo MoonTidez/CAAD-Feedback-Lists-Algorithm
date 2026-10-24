@@ -56,7 +56,7 @@
 
   function resultLabel(item, listLengths) {
     if (item.rank !== null) return ordinal(item.rank) + " choice";
-    return listLengths[nameKey(item.name)] === 0 ? "No choices listed" : "Not on list";
+    return listLengths[nameKey(item.name)] === 0 ? "No choices listed" : "Couldn't place from their choices";
   }
 
   // "2026-10-26" -> "Mon 26 Oct 2026", independent of the viewer's locale.
@@ -286,7 +286,7 @@
     const items = [
       ["Got their 1st choice", stats.firstChoice],
       ["Got a top-3 choice", stats.topThree],
-      ["Placed off their list", stats.notOnList],
+      ["Couldn't place from their choices", stats.notOnList],
       ["Average rank (listed)", stats.averageRank === null ? "—" : stats.averageRank.toFixed(2)],
       ["Worst listed rank", stats.worstRank === null ? "—" : ordinal(stats.worstRank)],
     ];
